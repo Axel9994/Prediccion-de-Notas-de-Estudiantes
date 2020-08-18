@@ -1,0 +1,47 @@
+---
+title: "Prediccion de Notas de Estudiantes"
+author: "Axel Alemán"
+date: "18/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cargar librerias, echo=F}
+library(ggplot2)
+library(dplyr)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+```
+
+```{r cargar_archivos, echo=F}
+notas_mat <- read.csv('student_mat.csv')
+notas_por <- read.csv('student_por.csv')
+
+notas_mat$materia <- 'M'
+notas_por$materia <- 'P'
+
+notas_raw <- rbind(notas_mat, notas_por)
+```
+
+```{r exploracion de datos}
+table(is.na(notas_raw))
+str(notas_raw)
+dim(notas_raw)
+summary(notas_raw)
+```
+
+```{r analisisEDA}
+ggplot(notas_raw, aes(x=school, y=g1)) + 
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=sex, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=age, y=g1)) +
+  geom_point() +
+  facet_wrap(~materia)
+```

@@ -290,3 +290,38 @@ hist(error_prueba)
 plot(x=prediccion_entrenamiento, y=notas_modg2train$g2)
 plot(x=prediccion_prueba, y=notas_modg2test$g2)
 ```
+
+```{r prediccion_nota_g3, echo=T}
+modelo_rglg3 <- lm(g3 ~ ., data = notas_modg3train)
+summary(modelo_rglg3)
+prediccion_entrenamiento <- predict(modelo_rglg3, newdata = notas_modg3train)
+prediccion_prueba <- predict(modelo_rglg3, newdata = notas_modg3test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg3train$g3
+error_prueba <- prediccion_prueba - notas_modg3test$g3
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y=notas_modg3train$g3)
+plot(x=prediccion_prueba, y=notas_modg3test$g3)
+```
+
+```{r prediccion_nota_g3arbol, echo=T}
+modelo_arbregg3 <- rpart(g3 ~ ., data = notas_modg3train)
+summary(modelo_arbregg3)
+rpart.plot(modelo_arbregg3)
+prediccion_entrenamiento <- predict(modelo_arbregg3, newdata = notas_modg3train)
+prediccion_prueba <- predict(modelo_arbregg3, newdata = notas_modg3test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg3train$g3
+error_prueba <- prediccion_prueba - notas_modg3test$g3
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y=notas_modg3train$g3)
+plot(x=prediccion_prueba, y=notas_modg3test$g3)
+```

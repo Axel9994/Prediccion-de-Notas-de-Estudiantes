@@ -143,7 +143,7 @@ ggplot(notas_raw, aes(x=school, y=g1)) +
   geom_boxplot()
 ```
 
-```{r preparacion_final_datos, echo=F}
+```{r preparacion_datos, echo=F}
 notas <- notas_raw
 notas$schoolGP <- ifelse(notas$school == "GP", 1, 0)
 notas$sex <- ifelse(notas$sex == "M", 1, 0)
@@ -241,4 +241,52 @@ hist(error_entrenamiento)
 hist(error_prueba)
 plot(x=prediccion_entrenamiento, y = notas_modg1train$g1)
 plot(x=prediccion_prueba, y= notas_modg1test$g1)
+```
+
+```{r preparacion_final, echo=T}
+notas_modg2 <- notas %>%
+  select(schoolGP, sex, addressR, famsize, schoolsup, paid, activities, higher, internet, studytime, failures, freetime, goout)
+notas_modg2 <- cbind(notas_modg2, mjob_dummy, fjob_dummy, reason_dummy, g1=notas$g1, g2=notas$g2)
+notas_modg2train <- notas_modg2[entrenamiento, ]
+notas_modg2test <- notas_modg2[-entrenamiento, ]
+notas_modg3 <- notas %>%
+  select(schoolGP, sex, addressR, famsize, schoolsup, paid, activities, higher, internet, studytime, failures, freetime, goout)
+notas_modg3 <- cbind(notas_modg3, mjob_dummy, fjob_dummy, reason_dummy, g1=notas$g1, g2=notas$g2, g3=notas$g3)
+notas_modg3train <- notas_modg3[entrenamiento, ]
+notas_modg3test <- notas_modg3[-entrenamiento, ]
+```
+
+```{r prediccion_nota_g2, echo=T}
+modelo_rglg2 <- lm(g2 ~ ., data = notas_modg2train)
+summary(modelo_rglg2)
+prediccion_entrenamiento <- predict(modelo_rglg2, newdata = notas_modg2train)
+prediccion_prueba <- predict(modelo_rglg2, newdata = notas_modg2test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg2train$g2
+error_prueba <- prediccion_prueba - notas_modg2test$g2
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y=notas_modg2train$g2)
+plot(x=prediccion_prueba, y=notas_modg2test$g2)
+```
+
+```{r prediccion_nota_g2_arbol, echo=T}
+modelo_arbregg2 <- rpart(g2 ~ ., data = notas_modg2train)
+summary(modelo_arbregg2)
+rpart.plot(modelo_arbregg2)
+prediccion_entrenamiento <- predict(modelo_arbregg2, newdata = notas_modg2train)
+prediccion_prueba <- predict(modelo_arbregg2, newdata = notas_modg2test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg2train$g2
+error_prueba <- prediccion_prueba - notas_modg2test$g2
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y=notas_modg2train$g2)
+plot(x=prediccion_prueba, y=notas_modg2test$g2)
 ```

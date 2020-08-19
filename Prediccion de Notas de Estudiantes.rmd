@@ -16,6 +16,7 @@ library(varhandle)
 library(rpart)
 library(rpart.plot)
 library(randomForest)
+library(xgboost)
 set.seed(64)
 ```
 
@@ -182,5 +183,62 @@ plot(x=prediccion_entrenamiento, y = notas_modg1train$g1)
 plot(x=prediccion_prueba, y= notas_modg1test$g1)
 ```
 
-```{r arbol_decision}
+```{r arbol_decision, echo=T}
+modelo_arbreg <- rpart(g1 ~ ., data = notas_modg1train)
+summary(modelo_arbreg)
+rpart.plot(modelo_arbreg)
+prediccion_entrenamiento <- predict(modelo_arbreg, newdata = notas_modg1train)
+prediccion_prueba <- predict(modelo_arbreg, newdata = notas_modg1test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg1train$g1
+error_prueba <- prediccion_prueba - notas_modg1test$g1
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y = notas_modg1train$g1)
+plot(x=prediccion_prueba, y= notas_modg1test$g1)
+```
+
+```{r random_forest, echo=T}
+modelo_RNReg <- randomForest(g1 ~ ., data = notas_modg1train, ntree=80)
+summary(modelo_RNReg)
+prediccion_entrenamiento <- predict(modelo_RNReg, newdata = notas_modg1train)
+prediccion_prueba <- predict(modelo_RNReg, newdata = notas_modg1test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg1train$g1
+error_prueba <- prediccion_prueba - notas_modg1test$g1
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y = notas_modg1train$g1)
+plot(x=prediccion_prueba, y= notas_modg1test$g1)
+```
+
+```{r xgboost, echo=T}
+etiquetas_train <- notas_modg1train$g1
+etiquetas_test <- notas_modg1test$g1
+datos_train <- notas_modg1train %>%
+  select(-g1)
+datos_test <- notas_modg1test %>%
+  select(-g1)
+datos_train <- as.matrix(datos_train)
+datos_test <- as.matrix(datos_test)
+modelo_XGB <- xgboost(data = datos_train, label = etiquetas_train, nrounds = 10, params = list(objective = "reg:squarederror") )
+summary(modelo_XGB)
+prediccion_entrenamiento <- predict(modelo_XGB, newdata = datos_train)
+prediccion_prueba <- predict(modelo_XGB, newdata = datos_test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg1train$g1
+error_prueba <- prediccion_prueba - notas_modg1test$g1
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y = notas_modg1train$g1)
+plot(x=prediccion_prueba, y= notas_modg1test$g1)
 ```

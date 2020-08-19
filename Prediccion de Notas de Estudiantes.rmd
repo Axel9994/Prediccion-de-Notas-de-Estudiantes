@@ -12,9 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r cargar librerias, echo=F}
 library(ggplot2)
 library(dplyr)
+library(varhandle)
 library(rpart)
 library(rpart.plot)
 library(randomForest)
+set.seed(64)
 ```
 
 ```{r cargar_archivos, echo=F}
@@ -41,7 +43,144 @@ ggplot(notas_raw, aes(x=school, y=g1)) +
 ggplot(notas_raw, aes(x=sex, y=g1)) +
   geom_boxplot() +
   facet_wrap(~materia)
-ggplot(notas_raw, aes(x=age, y=g1)) +
+ggplot(notas_raw, aes(x=as.factor(age), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=address, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=famsize, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=pstatus, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(medu), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(fedu), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=mjob, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=fjob, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=reason, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=guardian, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(traveltime), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(studytime), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(failures), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=schoolsup, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=famsup, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=paid, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=activities, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=nursery, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=higher, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=internet, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=romantic, y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(famrel), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(freetime), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(goout), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(dalc), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(walc), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=as.factor(health), y=g1)) +
+  geom_boxplot() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=absences, y=g1)) +
   geom_point() +
   facet_wrap(~materia)
+ggplot(notas_raw, aes(x=g1, y=g2)) +
+  geom_point() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=g2, y=g3)) +
+  geom_point() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=g1, y=g3)) +
+  geom_point() +
+  facet_wrap(~materia)
+ggplot(notas_raw, aes(x=materia, y=g1)) +
+  geom_boxplot()
+ggplot(notas_raw, aes(x=school, y=g1)) +
+  geom_boxplot()
+```
+
+```{r preparacion_final_datos, echo=F}
+notas <- notas_raw
+notas$schoolGP <- ifelse(notas$school == "GP", 1, 0)
+notas$sex <- ifelse(notas$sex == "M", 1, 0)
+notas$addressR <- ifelse(notas$address == "R", 1, 0)
+notas$famsize <- ifelse(notas$famsize == "GT3", 1, 0)
+mjob_dummy <- to.dummy(notas$mjob, 'mjob')
+fjob_dummy <- to.dummy(notas$fjob, 'fjob')
+reason_dummy <- to.dummy(notas$reason, 'reason')
+notas$schoolsup <- ifelse(notas$schoolsup == T, 1, 0)
+notas$paid <- ifelse(notas$paid == T, 1, 0)
+notas$activities <- ifelse(notas$activities == T, 1, 0)
+notas$higher <- ifelse(notas$higher == T, 1, 0)
+notas$internet <- ifelse(notas$internet == T, 1, 0)
+
+notas_modg1 <- notas %>%
+  select(schoolGP, sex, addressR, famsize, schoolsup, paid, activities, higher, internet, studytime, failures, freetime, goout)
+notas_modg1 <- cbind(notas_modg1, mjob_dummy, fjob_dummy, reason_dummy, g1=notas$g1)
+entrenamiento <- sample(1:nrow(notas_modg1), ceiling(nrow(notas_modg1)*0.7))
+notas_modg1train <- notas_modg1[entrenamiento, ]
+notas_modg1test <- notas_modg1[-entrenamiento, ]
+```
+
+```{r regresion_linear_multiple, echo=T}
+modelo_rgl <- lm(g1 ~ ., data = notas_modg1train)
+summary(modelo_rgl)
+prediccion_entrenamiento <- predict(modelo_rgl, newdata = notas_modg1train)
+prediccion_prueba <- predict(modelo_rgl, newdata = notas_modg1test)
+error_entrenamiento <- prediccion_entrenamiento - notas_modg1train$g1
+error_prueba <- prediccion_prueba - notas_modg1test$g1
+print('MSE de Entrenamiento: ') 
+print(mean(error_entrenamiento^2))
+print('MSE de Prueba: ') 
+print(mean(error_prueba^2))
+hist(error_entrenamiento)
+hist(error_prueba)
+plot(x=prediccion_entrenamiento, y = notas_modg1train$g1)
+plot(x=prediccion_prueba, y= notas_modg1test$g1)
+```
+
+```{r arbol_decision}
 ```
